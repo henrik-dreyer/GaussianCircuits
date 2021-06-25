@@ -38,41 +38,35 @@ class CovarianceMatrix():
         else:
             self.Gamma = Gamma_initial
 
-    def apply_random_matchgate_layer(self):
+    def apply_random_matchgate(self):
         h = np.random.rand(2*self.L,2*self.L)
         h = h - h.T
-        self.Gamma = expm(-4*1j*h).dot(self.Gamma).dot( expm(4*1j*h) )
+        self.Gamma = expm(4*h).dot(self.Gamma).dot( expm(-4*h) )
 
         #Not normalised
 
 
 
-    def trace_out(self, sites):
+    def entropy(self, sites=None):
         """
-        Removes rows and columns from real space correlation matrices
-        Cxy and Fxy in-place. Sets Majorana modes
-            M = <a_m a_n>
-        where
-            a_{2n-1} = c_n + c_n^\dagger    [EVEN]
-            a_{2n} = i(c_n - c_n^\dagger)     [ODD]
-
+        Entanglement entropy after tracing out 'sites'
 
         Parameters
         ----------
-        sites: (List of Integers) The sites to be traces out (complement remains)
+        sites: (List of Integers) The sites to be traced out (complement remains)
         """
 
-        l = self.L - len(sites)
-
+        if sites==None:
+            sites = np.arange(self.L//2)
         modes_to_delete = [x*2 for x in sites] + [x*2+1 for x in sites]
 
-        self.Gamma = np.delete(self.Gamma, modes_to_delete, axis=0)
-        self.Gamma = np.delete(self.Gamma, modes_to_delete, axis=1)
+        Gamma = np.delete(self.Gamma, modes_to_delete, axis=0)
+        Gamma = np.delete(Gamma, modes_to_delete, axis=1)
 
-        self.eigvals = np.sort(np.linalg.eigh(-1j*self.Gamma)[0])[::-1]
-        self.eigvals = self.eigvals[0:self.eigvals.shape[0] // 2]
+        eigvals = np.sort(np.linalg.eigh(-1j*Gamma)[0])[::-1]
+        eigvals = eigvals[0:eigvals.shape[0] // 2]
 
-        self.entropy = ff_entropy(self.eigvals)
+        return ff_entropy(eigvals)
 
 
 def ff_entropy(eigvals):
