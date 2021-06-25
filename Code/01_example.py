@@ -1,8 +1,6 @@
-import numpy as np
 from covariance_matrix import CovarianceMatrix
 
-
 psi = CovarianceMatrix(L=2)
-print(psi.Gamma)
-psi.apply_random_matchgate_layer()
-print(psi.Gamma.round(3))
+print("Entropy before = {}".format(psi.entropy()))
+psi.apply_random_matchgate()
+print("Entropy after = {:.2f}".format(psi.entropy()))
