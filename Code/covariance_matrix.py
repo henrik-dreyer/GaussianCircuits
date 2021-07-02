@@ -35,6 +35,7 @@ class CovarianceMatrix():
         ----------
         ts: (List of Real numbers of size L-1) The times/angles. Set all equal for pseudo-translational-invariance
         """
+        #If you want to enforce no terms across the boundary:
         #h = np.diag([item for items in zip([0] * len(ts),ts) for item in items] + [0],1)
         #h = h - h.T
         h = make_gXX(ts)
