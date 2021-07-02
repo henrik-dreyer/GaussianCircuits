@@ -3,12 +3,8 @@ import numpy as np
 from matplotlib import pyplot as plt
 import os
 from time import time
-from jax import jit, grad
-from scipy.optimize import minimize
+from jax import grad
 import pandas as pd
-
-#n=3
-#execution_number = pd.DataFrame(np.array(allgrads).T, columns=['Execution Number'])
 
 def cost_function(ts, L, p, Jx, Jz):
     '''
@@ -63,24 +59,19 @@ for LL in np.logspace(0.5,3,16):
     vars.append(np.var(grads))
     Ls.append(L)
 
-    #plt.figure(1)
-    #plt.loglog(Ls, means,'o',label='Means')
-
-    plt.figure(2)
-
     if len(Ls)>1:
         fit = np.polyfit(np.log(Ls), np.log(vars), 1)
         x = np.linspace(min(Ls), max(Ls), 100)
         y = np.exp(np.polyval(fit, np.log(x)))
         plt.loglog(x,y,'--',label='Fit: $var ~ L^{{{:.2f}}}$'.format(fit[0]))
 
-    plt.title('Targeting $H=\sum_j (randX_j) X_j X_{j+1} + (randZ_j) Z_j$ with non-TI free QAOA.')
-    plt.loglog(Ls,vars, 'o', label='Variances')
-    plt.xlabel('$L$')
-    plt.legend(loc='best')
-    plt.ylabel('var($ dE / dt)$ ({} samples and derivate w.r.t. central parameter)'.format(n_samples))
-    plt.savefig('../Plots/ProducingScript=' + os.path.basename(__file__) + '_04_random_target.png')
-    plt.show()
+        plt.title('Targeting $H=\sum_j (randX_j) X_j X_{j+1} + (randZ_j) Z_j$ with non-TI free QAOA.')
+        plt.loglog(Ls,vars, 'o', label='Variances')
+        plt.xlabel('$L$')
+        plt.legend(loc='best')
+        plt.ylabel('var($ dE / dt)$ ({} samples and derivate w.r.t. central parameter)'.format(n_samples))
+        plt.savefig('../Plots/ProducingScript=' + os.path.basename(__file__) + '_04_random_target.png')
+        plt.show()
 
     df = pd.DataFrame(np.array(allgrads).T, columns=labels)
     df.to_csv('../Data/ProducingScript=' + os.path.basename(__file__) + '04_random_target_gradients.csv')

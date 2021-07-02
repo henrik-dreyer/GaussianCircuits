@@ -56,15 +56,15 @@ for p in range(1,L**2):
     nits.append(res.nit)
 
     if len(ps)>1:
+        plt.figure(1)
         plt.title('Targeting $H=\sum_j (randX_j) X_j X_{j+1} + (randZ_j) Z_j$ with non-TI free QAOA. L=6')
         plt.loglog(ps,[x-exact_energy for x in energies], 'o')
         plt.xlabel('$p$')
-        #plt.legend(loc='best')
         plt.ylabel('$E- E_{exact}$')
         plt.savefig('../Plots/ProducingScript=' + os.path.basename(__file__) + '_energy.png')
         plt.show()
 
-    if len(ps)>1:
+        plt.figure(2)
         fit = np.polyfit(np.log(ps), np.log(nits), 1)
         x = np.linspace(min(ps), max(ps), 100)
         y = np.exp(np.polyval(fit, np.log(x)))

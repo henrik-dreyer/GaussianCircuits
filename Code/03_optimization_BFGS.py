@@ -1,9 +1,7 @@
 from differentiable_covariance import CovarianceMatrix, ising_energy_density
 import numpy as np
-from matplotlib import pyplot as plt
-import os
 from time import time
-from jax import jit, grad
+from jax import grad
 from scipy.optimize import minimize
 
 
@@ -39,9 +37,6 @@ t_initial = np.random.rand(p*(L-1) + p*L)*np.pi/2
 cost_density = lambda ts: cost_function(ts, L, p, Jx, Jz).real/L
 cost_grad = grad(cost_density)
 
-print(cost_density(t_initial).real)
-
-topt = time()
 time2solution = time()
 res = minimize(cost_density, t_initial, method='BFGS', jac=cost_grad,
                options={'maxiter': 1e6, 'gtol': 1e-7, 'disp': True, 'eps': 6e-14})
