@@ -27,14 +27,14 @@ def cost_function(ts,L,p, Jx, Jz):
     energy = psi.energy(Jx, Jz)
     return energy
 
-
-p = 5
-L = 10
+L = 2
+p = L
 g = 0.5
 Jz = [g] * L
 Jx = [1] * (L - 1)
 exact_energy = ising_energy_density(Jz, Jx)
 
+np.random.seed(1)
 t_initial = np.random.rand(p*(L-1) + p*L)*np.pi/2
 cost_density = lambda ts: cost_function(ts, L, p, Jx, Jz).real/L
 cost_grad = grad(cost_density)

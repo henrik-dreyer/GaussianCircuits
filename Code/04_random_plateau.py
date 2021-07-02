@@ -37,7 +37,7 @@ means=[]
 vars=[]
 Ls =[]
 allgrads=[]
-for LL in np.logspace(0.3,3,20):
+for LL in np.logspace(0.5,3,16):
     L=round(LL/2.)*2
     p=L//2
     Jz = np.random.rand(L)*2-1
@@ -51,7 +51,9 @@ for LL in np.logspace(0.3,3,20):
         t0=time()
         print("Sample #{}".format(j))
         t = np.random.rand(p * (L - 1) + p * L) * np.pi / 2
-        grads.append(cost_grad(t)[0].item())
+        single_grad = cost_grad(t)
+        ind_derivatice = len(single_grad) // 2
+        grads.append(single_grad[ind_derivatice].item())
         t1=time()
         print("Time per Sample = {}".format(t1-t0))
 
@@ -76,7 +78,7 @@ for LL in np.logspace(0.3,3,20):
     plt.loglog(Ls,vars, 'o', label='Variances')
     plt.xlabel('$L$')
     plt.legend(loc='best')
-    plt.ylabel('var($ dE / d t_1)$ ({} samples)'.format(n_samples))
+    plt.ylabel('var($ dE / dt)$ ({} samples and derivate w.r.t. central parameter)'.format(n_samples))
     plt.savefig('../Plots/ProducingScript=' + os.path.basename(__file__) + '_04_random_target.png')
     plt.show()
 

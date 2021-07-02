@@ -35,8 +35,9 @@ class CovarianceMatrix():
         ----------
         ts: (List of Real numbers of size L-1) The times/angles. Set all equal for pseudo-translational-invariance
         """
-        h = np.diag([item for items in zip([0] * len(ts),ts) for item in items] + [0],1)
-        h = h - h.T
+        #h = np.diag([item for items in zip([0] * len(ts),ts) for item in items] + [0],1)
+        #h = h - h.T
+        h = make_gXX(ts)
         self.M = expm(2*h).dot(self.M).dot(expm(-2*h))
 
     def apply_Z_layer(self, ts):
@@ -47,8 +48,7 @@ class CovarianceMatrix():
         ----------
         ts: (List of Real numbers of size L) The times/angles. Set all equal for pseudo-translational-invariance
         """
-        h = np.diag([item for items in zip(ts,[0] * len(ts)) for item in items][:-1] ,1)
-        h = h - h.T
+        h = make_hZ(ts)
         self.M = expm(2*h).dot(self.M).dot(expm(-2*h))
 
 
@@ -62,10 +62,9 @@ class CovarianceMatrix():
         Jx: (List of L-1 Reals) Coupling strengths of X_j X_{j+1} terms
         Jz: (List of L Reals) Transverse field strengths Z_j
         """
-        h = np.diag([item for items in zip([0] * len(Jx),Jx) for item in items] + [0],1)
-        h = h + np.diag([item for items in zip(Jz,[0] * len(Jz)) for item in items][:-1] ,1)
-        h = h - h.T
-        return np.trace(h.dot(self.M))
+        h = make_gXX(Jx)
+        h = h + make_hZ(Jz)
+        return np.trace(h.dot(-1j * self.M - np.eye(self.L * 2))) / 2
 
 
     def entropy(self, sites=None):
@@ -98,10 +97,20 @@ def ff_entropy(eigvals):
 
 def ising_energy_density(Jz, Jx):
     L = len(Jz)
-    h = np.diag([item for items in zip([0] * len(Jx), Jx) for item in items] + [0], 1)
-    h = h + np.diag([item for items in zip(Jz, [0] * len(Jz)) for item in items][:-1], 1)
-    h = h - h.T
+    h = make_gXX(Jx)
+    h = h + make_hZ(Jz)
     eigvals = np.linalg.eigh(1j*h)[0]
     filled = [num for num in eigvals if num < 0]
     energy_density = np.sum(filled)/L
     return energy_density
+
+def make_gXX(ts):
+    h = np.diag([item for items in zip([0] * (len(ts)-1), ts[:-1]) for item in items] + [0], 1)
+    h[0,-1]  = ts[-1]
+    h = h - h.T
+    return h
+
+def make_hZ(ts):
+    h = np.diag([item for items in zip(ts, [0] * len(ts)) for item in items][:-1], 1)
+    h = h - h.T
+    return h
