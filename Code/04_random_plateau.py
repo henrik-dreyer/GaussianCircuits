@@ -28,14 +28,15 @@ def cost_function(ts, L, p, Jx, Jz):
 np.random.seed(1)
 n_samples = 100
 
-labels=[]
-means=[]
-vars=[]
-Ls =[]
-allgrads=[]
+labels = []
+means = []
+vars = []
+Ls = []
+allgrads = []
+
 for LL in np.logspace(0.5,3,16):
-    L=round(LL/2.)*2
-    p=L//2
+    L = round(LL/2.)*2
+    p = L//2
     Jz = np.random.rand(L)*2-1
     Jx = np.random.rand(L-1)*2-1
     cost_density = lambda ts: cost_function(ts, L, p, Jx, Jz).real/L
@@ -44,13 +45,13 @@ for LL in np.logspace(0.5,3,16):
     grads=[]
 
     for j in range(n_samples):
-        t0=time()
+        t0 = time()
         print("Sample #{}".format(j))
         t = np.random.rand(p * (L - 1) + p * L) * np.pi / 2
         single_grad = cost_grad(t)
         ind_derivatice = len(single_grad) // 2
         grads.append(single_grad[ind_derivatice].item())
-        t1=time()
+        t1 = time()
         print("Time per Sample = {}".format(t1-t0))
 
     allgrads.append(grads)

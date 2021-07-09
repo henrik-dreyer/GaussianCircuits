@@ -1,6 +1,17 @@
 import numpy as np
 from scipy.linalg import expm
 
+def make_gXX(ts):
+    h = np.diag([item for items in zip([0] * (len(ts)-1), ts[:-1]) for item in items] + [0], 1)
+    h[0,-1]  = ts[-1]
+    h = h - h.T
+    return h
+
+def make_hZ(ts):
+    h = np.diag([item for items in zip(ts, [0] * len(ts)) for item in items][:-1], 1)
+    h = h - h.T
+    return h
+
 class CovarianceMatrix():
 
     """
@@ -21,10 +32,13 @@ class CovarianceMatrix():
 
     def __init__(self, L, Gamma_initial=None):
         self.L=L
+        # Default to |00...0> state \Gamma
         if Gamma_initial==None:
             self.Gamma = np.diag([-1, 0]* (L-1) + [-1], 1)+np.diag([+1, 0]* (L-1)+[+1], -1)
         else:
             self.Gamma = Gamma_initial
+
+        # Construct correlation matrix from \Gamma
         self.M = np.eye(2*L) + 1j*self.Gamma
 
     def apply_XX_layer(self, ts):
@@ -90,12 +104,19 @@ class CovarianceMatrix():
 
         return ff_entropy(eigvals)
 
+"""
+Entanglement entropy from eigenvalues of reduced \Gamma
+"""
 def ff_entropy(eigvals):
     eigvals = np.array([x for x in eigvals if abs(x - 1) > 1e-10])
     epsl = np.arctanh(eigvals) * 2
     entropy = np.sum(np.log(1 + np.exp(-epsl))) + np.sum(epsl / (np.exp(epsl) + 1))
     return entropy
 
+"""
+Energy density of Ising model Jx \sum XX + Jz \sum Z
+i.e. the ground state energy divided by the lattice size
+"""
 def ising_energy_density(Jz, Jx):
     L = len(Jz)
     h = make_gXX(Jx)
@@ -104,14 +125,3 @@ def ising_energy_density(Jz, Jx):
     filled = [num for num in eigvals if num < 0]
     energy_density = np.sum(filled)/L
     return energy_density
-
-def make_gXX(ts):
-    h = np.diag([item for items in zip([0] * (len(ts)-1), ts[:-1]) for item in items] + [0], 1)
-    h[0,-1]  = ts[-1]
-    h = h - h.T
-    return h
-
-def make_hZ(ts):
-    h = np.diag([item for items in zip(ts, [0] * len(ts)) for item in items][:-1], 1)
-    h = h - h.T
-    return h
