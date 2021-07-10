@@ -28,7 +28,7 @@ def cost_function(ts, L, p, Jx, Jz):
     return energy
 
 # Script parameters
-L = 4
+L = 8
 np.random.seed(11)
 
 # Generate parameters for random Ising Hamiltonian
@@ -75,26 +75,28 @@ for p in range(1, L+1):
     df = pd.DataFrame([[p, res.fun, res.nit, time2solution, res.nfev, res.njev]], columns = ["p", "minimum", "iterations", "time", "nfev", "njev"])
     df.to_csv('../Data/ProducingScript=' + os.path.basename(__file__) + '.csv', mode = "a")
 
-    # Produce plot if we have more than one value of p computed
-    if len(ps)>1:
-        plt.figure(1)
-        plt.title('Targeting $H=\sum_j (randX_j) X_j X_{j+1} + (randZ_j) Z_j$ with non-TI free QAOA. L=6')
-        plt.loglog(ps, [x-exact_energy for x in energies], 'o')
-        plt.xlabel('$p$')
-        plt.ylabel('$E- E_{exact}$')
-        plt.savefig('../Plots/ProducingScript=' + os.path.basename(__file__) + '_energy.png')
-        plt.show()
+#    Uncomment to produce plots as results are produced
 
-        plt.figure(2)
-        fit = jnp.polyfit(jnp.log(ps), jnp.log(nits), 1)
-        x = jnp.linspace(min(ps), max(ps), 100)
-        y = jnp.exp(jnp.polyval(fit, jnp.log(x)))
-        
-        plt.title('Targeting $H=\sum_j (randX_j) X_j X_{j+1} + (randZ_j) Z_j$ with non-TI free QAOA. ' + f'L={L}')
-        plt.loglog(x,y,'--',label='Fit: #iter ~ $p^{{{:.2f}}}$'.format(fit[0]))
-        plt.loglog(ps,nits,'o',label='Data')
-        plt.xlabel('$p$')
-        plt.ylabel('$n_{iterations}$ of BFGS')
-        plt.legend(loc='best')
-        plt.savefig('../Plots/ProducingScript=' + os.path.basename(__file__) + '_iterations.png')
-        plt.show()
+#    # Produce plot if we have more than one value of p computed
+#    if len(ps)>1:
+#        plt.figure(1)
+#        plt.title('Targeting $H=\sum_j (randX_j) X_j X_{j+1} + (randZ_j) Z_j$ with non-TI free QAOA. L=6')
+#        plt.loglog(ps, [x-exact_energy for x in energies], 'o')
+#        plt.xlabel('$p$')
+#        plt.ylabel('$E- E_{exact}$')
+#        plt.savefig('../Plots/ProducingScript=' + os.path.basename(__file__) + '_energy.png')
+#        plt.show()
+#
+#        plt.figure(2)
+#        fit = jnp.polyfit(jnp.log(ps), jnp.log(nits), 1)
+#        x = jnp.linspace(min(ps), max(ps), 100)
+#        y = jnp.exp(jnp.polyval(fit, jnp.log(x)))
+#        
+#        plt.title('Targeting $H=\sum_j (randX_j) X_j X_{j+1} + (randZ_j) Z_j$ with non-TI free QAOA. ' + f'L={L}')
+#        plt.loglog(x,y,'--',label='Fit: #iter ~ $p^{{{:.2f}}}$'.format(fit[0]))
+#        plt.loglog(ps,nits,'o',label='Data')
+#        plt.xlabel('$p$')
+#        plt.ylabel('$n_{iterations}$ of BFGS')
+#        plt.legend(loc='best')
+#        plt.savefig('../Plots/ProducingScript=' + os.path.basename(__file__) + '_iterations.png')
+#        plt.show()

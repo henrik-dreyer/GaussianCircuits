@@ -26,7 +26,7 @@ def cost_function(ts,L,p, Jx, Jz):
     return energy
 
 
-L = 4
+L = 8
 
 np.random.seed(11)
 Jz = np.random.rand(L)
@@ -59,25 +59,28 @@ for p in range(1,L+1):
     df = pd.DataFrame([[p, res.fun, res.nit, time2solution, res.nfev]], columns = ["p", "minimum", "iterations", "time", "nfev"])
     df.to_csv('../Data/ProducingScript=' + os.path.basename(__file__) + '.csv', mode = "a")
 
-    if len(ps)>1:
-        plt.figure(1)
-        plt.title('Targeting $H=\sum_j (randX_j) X_j X_{j+1} + (randZ_j) Z_j$ with non-TI free QAOA. L=6')
-        plt.loglog(ps,[x-exact_energy for x in energies], 'o')
-        plt.xlabel('$p$')
-        plt.ylabel('$E- E_{exact}$')
-        plt.savefig('../Plots/ProducingScript=' + os.path.basename(__file__) + '_energy.png')
-        plt.show()
 
-        plt.figure(2)
-        fit = np.polyfit(np.log(ps), np.log(nits), 1)
-        x = np.linspace(min(ps), max(ps), 100)
-        y = np.exp(np.polyval(fit, np.log(x)))
+# Uncomment to plot results as they are computed
 
-        plt.title('Targeting $H=\sum_j (randX_j) X_j X_{j+1} + (randZ_j) Z_j$ with non-TI free QAOA. ' + f'L={L}')
-        plt.loglog(x,y,'--',label='Fit: #iter ~ $p^{{{:.2f}}}$'.format(fit[0]))
-        plt.loglog(ps,nits,'o',label='Data')
-        plt.xlabel('$p$')
-        plt.ylabel('$n_{iterations}$ of Nelder-Mead')
-        plt.legend(loc='best')
-        plt.savefig('../Plots/ProducingScript=' + os.path.basename(__file__) + '_iterations.png')
-        plt.show()
+#    if len(ps)>1:
+#        plt.figure(1)
+#        plt.title('Targeting $H=\sum_j (randX_j) X_j X_{j+1} + (randZ_j) Z_j$ with non-TI free QAOA. L=6')
+#        plt.loglog(ps,[x-exact_energy for x in energies], 'o')
+#        plt.xlabel('$p$')
+#        plt.ylabel('$E- E_{exact}$')
+#        plt.savefig('../Plots/ProducingScript=' + os.path.basename(__file__) + '_energy.png')
+#        plt.show()
+#
+#        plt.figure(2)
+#        fit = np.polyfit(np.log(ps), np.log(nits), 1)
+#        x = np.linspace(min(ps), max(ps), 100)
+#        y = np.exp(np.polyval(fit, np.log(x)))
+#
+#        plt.title('Targeting $H=\sum_j (randX_j) X_j X_{j+1} + (randZ_j) Z_j$ with non-TI free QAOA. ' + f'L={L}')
+#        plt.loglog(x,y,'--',label='Fit: #iter ~ $p^{{{:.2f}}}$'.format(fit[0]))
+#        plt.loglog(ps,nits,'o',label='Data')
+#        plt.xlabel('$p$')
+#        plt.ylabel('$n_{iterations}$ of Nelder-Mead')
+#        plt.legend(loc='best')
+#        plt.savefig('../Plots/ProducingScript=' + os.path.basename(__file__) + '_iterations.png')
+#        plt.show()
