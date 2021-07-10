@@ -45,6 +45,9 @@ energies = []
 # Number of iterations needed to converge for each value of p
 nits = []
 
+# Track if header has alrady been written when storing results
+write_header = True
+
 for p in range(1, L+1):
     t_initial = np.random.rand(p * (L-1) + p * L) * jnp.pi/2
 
@@ -72,8 +75,10 @@ for p in range(1, L+1):
     energies.append(res.fun)
     nits.append(res.nit)
 
-    df = pd.DataFrame([[p, res.fun, res.nit, time2solution, res.nfev, res.njev]], columns = ["p", "minimum", "iterations", "time", "nfev", "njev"])
-    df.to_csv('../Data/ProducingScript=' + os.path.basename(__file__) + '.csv', mode = "a")
+    df = pd.DataFrame([[Jz, Jx, exact_energy, p, res.fun, res.nit, time2solution, res.nfev, res.njev]], columns = ["jz", "jx", "exact_energy", "p", "minimum", "iterations", "time", "nfev", "njev"])
+    df.to_csv('../Data/ProducingScript=' + os.path.basename(__file__) + '.csv', mode = "a", index_label = False, header = write_header)
+
+    write_header = False
 
 #    Uncomment to produce plots as results are produced
 
