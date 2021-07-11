@@ -61,8 +61,8 @@ for p in range(1, L+1):
 
     # Comment/uncomment for global/local optimisation
 
-    #res = basinhopping(cost_density, t_initial, minimizer_kwargs = {"method": "BFGS", "options": {"maxiter": 1e9}, "jac": cost_grad})
-    res = minimize(cost_density, t_initial, method = "BFGS", options = {"maxiter": 1e9}, jac = cost_grad)
+    res = basinhopping(cost_density, t_initial, minimizer_kwargs = {"method": "BFGS", "options": {"maxiter": 1e9}, "jac": cost_grad}, niter = 20)
+    #res = minimize(cost_density, t_initial, method = "BFGS", options = {"maxiter": 1e9}, jac = cost_grad)
 
 
     time2solution = time() - time2solution
@@ -76,7 +76,7 @@ for p in range(1, L+1):
     nits.append(res.nit)
 
     df = pd.DataFrame([[Jz, Jx, exact_energy, p, res.fun, res.nit, time2solution, res.nfev, res.njev]], columns = ["jz", "jx", "exact_energy", "p", "minimum", "iterations", "time", "nfev", "njev"])
-    df.to_csv('../Data/ProducingScript=' + os.path.basename(__file__) + '.csv', mode = "a", index_label = False, header = write_header)
+    df.to_csv('../Data/ProducingScript=' + os.path.basename(__file__) + '_global.csv', mode = "a", index_label = False, header = write_header)
 
     write_header = False
 

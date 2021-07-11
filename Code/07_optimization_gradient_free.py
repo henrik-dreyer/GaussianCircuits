@@ -60,7 +60,7 @@ for p in range(1,L+1):
     energies.append(res.fun)
     nits.append(res.nit)
 
-    df = pd.DataFrame([[Jz, Jx, exact_energy, p, res.fun, res.nit, time2solution, res.nfev, res.njev]], columns = ["jz", "jx", "exact_energy", "p", "minimum", "iterations", "time", "nfev", "njev"])
+    df = pd.DataFrame([[Jz, Jx, exact_energy, p, res.fun, res.nit, time2solution, res.nfev]], columns = ["jz", "jx", "exact_energy", "p", "minimum", "iterations", "time", "nfev"])
     df.to_csv('../Data/ProducingScript=' + os.path.basename(__file__) + '.csv', mode = "a", index_label = False, header = write_header)
     write_header = False
 
