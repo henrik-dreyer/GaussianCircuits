@@ -1,3 +1,4 @@
+from jax._src.numpy.linalg import eig
 import jax.numpy as jnp
 import jax
 from jax import grad, jit, vmap
@@ -133,14 +134,45 @@ def ff_entropy(eigvals):
     return entropy
 
 """
+Eigenvalues of Ising model Jx \sum XX + Jz \sum Z
+"""
+def ising_eigenvalues(Jz, Jx):
+    h = make_gXX(Jx)
+    h = h + make_hZ(Jz)
+    eigvals_h = jnp.linalg.eigh(1j*h)[0]
+    L = len(eigvals_h)
+    indices = (jnp.array([True if d == '1' else False for d in format(i, f"0{L}b")]) for i in range(2**L))
+    eigvals = [sum(eigvals_h[i]) for i in indices]
+    return sorted(eigvals)
+
+"""
+Energy density of Ising model Jx \sum XX + Jz \sum Z
+i.e. the ground state energy divided by the lattice size
+"""
+def ising_ground_state_energy(Jz, Jx):
+    h = make_gXX(Jx)
+    h = h + make_hZ(Jz)
+    eigvals = jnp.linalg.eigh(1j*h)[0]
+    filled = (num for num in eigvals if num < 0)
+    ground_state_energy = np.sum(filled)
+    return ground_state_energy
+
+"""
 Energy density of Ising model Jx \sum XX + Jz \sum Z
 i.e. the ground state energy divided by the lattice size
 """
 def ising_energy_density(Jz, Jx):
     L = len(Jz)
+    return ising_ground_state_energy(Jz, Jx) / L
+
+"""
+Largest eigenvalue of Ising model Jx \sum XX + Jz \sum Z
+"""
+def ising_largest_eigenvalue(Jz, Jx):
+    L = len(Jz)
     h = make_gXX(Jx)
     h = h + make_hZ(Jz)
     eigvals = jnp.linalg.eigh(1j*h)[0]
-    filled = [num for num in eigvals if num < 0]
-    energy_density = np.sum(filled)/L
-    return energy_density
+    filled = (num for num in eigvals if num > 0)
+    largest_eigenvalue = np.sum(filled)
+    return largest_eigenvalue
