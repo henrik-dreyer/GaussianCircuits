@@ -14,7 +14,7 @@ ts: (List of Real numbers of size L-1) The times/angles. Set all equal for pseud
 """
 def make_gXX(ts):
     h = jnp.diag(jnp.array([item for items in zip([0] * (len(ts)-1), ts[:-1]) for item in items] + [0]), 1)
-    jax.ops.index_update(h, (0,-1), ts[-1])
+    h = jax.ops.index_update(h, (0,-1), ts[-1])
     h = h - h.T
     return h
 
